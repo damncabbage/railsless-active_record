@@ -1,4 +1,8 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in railsless-active_record.gemspec
 gemspec
+
+group :test do
+  gem 'rspec', '~> 2.14'
+  gem 'simplecov', '~> 0.7'
+end
