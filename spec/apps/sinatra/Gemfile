@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem 'rake'
+gem 'sinatra'
+gem 'sqlite3'
+gem 'railsless-active_record',
+  :path => File.expand_path('../../..', File.dirname(__FILE__))

@@ -1,0 +1,4 @@
+require 'railsless/active_record/load_tasks'
+task :environment do
+  require './app'
+end
