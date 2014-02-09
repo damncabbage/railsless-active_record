@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 require 'net/http'
 require 'open3'
 require 'json'
@@ -6,7 +7,7 @@ require 'json'
 # The following tests spin up a Sinatra app in a separate process; keeping it
 # isolated means we can test the entire DB and app lifecycle without risk of pollution.
 
-# This shared example is used by both the spec/apps/sinatra-modular and the
+# This shared example is used by both the spec/apps/sinatra-modular and
 # spec/apps/sinatra-classic dummy apps. The meat of the specs are in the example;
 # see the bottom of file for app definitions. (We need to define the shared example
 # before we can use it.)
@@ -19,14 +20,42 @@ shared_examples "a Sinatra app" do
       create drop fixtures:load migrate migrate:status rollback
       schema:cache:clear schema:cache:dump schema:dump schema:load
       seed setup structure:dump version
+      generate:config generate:migration
     ).each do |task|
       expect(out).to match /^rake db:#{task}/
     end
   end
 
-  context "migrations" do
-    pending "creates migrations with 'rake db:create_migration NAME=NameHere'" do
-      # TODO
+  context "generators" do
+    describe "db:generate:config" do
+      let(:config_path) do
+        File.join(app_path, 'config/database.yml')
+      end
+      let(:template_path) do
+        File.expand_path('../../templates/database.yml', File.dirname(__FILE__))
+      end
+
+      it "ignores an existing config file" do
+        expect(File).to exist(config_path)
+        out = run "bundle exec rake db:generate:config"
+        expect(out).to match /Database config already exists/
+      end
+
+      it "generates a config file that doesn't yet exist" do
+        FileUtils.rm_f(config_path)
+        out = run "bundle exec rake db:generate:config"
+        expect(File.read(config_path)).to eq File.read(template_path)
+      end
+
+      # Force a reset of the configuration, regardless of the test results.
+      after do
+        FileUtils.rm_f(config_path)
+        FileUtils.cp(template_path, config_path)
+      end
+    end
+
+    pending "'db:generate:migration NAME=NameHere' creates a migration" do
+      # TODO: 'NameHere' -> 'name_here' transform.
     end
   end
 

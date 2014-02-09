@@ -1,15 +1,18 @@
 require 'active_record'
 require 'rake'
+require 'fileutils'
 
 module Railsless
   module ActiveRecord
     module Rake
       module_function
 
+      TEMPLATES_PATH = File.expand_path('../../../templates', File.dirname(__FILE__))
+
       def load_tasks!(config=nil)
         config ||= Railsless::ActiveRecord::Config.new
         load_database_tasks!(config)
-        load_migration_task!(config)
+        load_generator_tasks!(config)
       end
 
       def load_database_tasks!(config)
@@ -39,9 +42,32 @@ module Railsless
         load 'active_record/railties/databases.rake'
       end
 
-      def load_migration_task!(config)
+      # Creates database.yml files and migrations.
+      def load_generator_tasks!(config)
         extend ::Rake::DSL
-        # TODO: rake db:create_migration NAME=...
+        namespace :db do
+          namespace :generate do
+
+            desc "Generate and write a config/database.yml"
+            task :config do
+              config_path = config.db_config_path
+              if File.exists?(config_path)
+                puts "Database config already exists at #{config_path}; skipping..."
+              else
+                FileUtils.cp(
+                  File.join(TEMPLATES_PATH, 'database.yml'),
+                  config_path
+                )
+              end
+            end
+
+            desc "Generate a database migration, eg: rake db:generate:migration NAME=CreatePosts"
+            task :migration do
+              # TODO: NAME=...
+              raise "Not Implemented"
+            end
+          end
+        end
       end
     end
   end
