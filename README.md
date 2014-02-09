@@ -1,10 +1,10 @@
-# Railsless ActiveRecord
+# Railsless-ActiveRecord
 
-Provides a ActiveRecord Rake tasks and integration for Sinatra, Goliath and other apps that aren't using Rails.
+Provides a ActiveRecord Rake tasks and integration for Sinatra, Grape and other not-Rails frameworks.
 
 ## Installation
 
-Add `gem 'railsless-active_record'` to your Gemfile (along with `gem 'sqlite'`, or whatever other database you're using). Run `bundle install` to pull it down and set it up.
+Add `gem 'railsless-active_record'` to your Gemfile (along with `gem 'sqlite3'`, or whatever other database you're using). Run `bundle install` to pull it down and set it up.
 
 ### Rake
 
@@ -22,13 +22,41 @@ You'll then need to integrate this gem with your app; here's how to do it with s
 In your application, add a `register Railsless::ActiveRecord::SinatraExtension` line to use the extension to manage your database configuration and connections, eg.
 
 ```ruby
-require 'sinatra/active_record'
+require 'sinatra/base'
+require 'railsless/active_record/sinatra_extension'
 class MyApp < Sinatra::Base
   register Railsless::ActiveRecord::SinatraExtension
 
   # ... And the rest of your app goes here.
 end
 ```
+
+... Or with the "Classic" style:
+
+```ruby
+require 'sinatra'
+require 'railsless/active_record/sinatra_extension'
+
+# get '/foo', ... etc.
+```
+
+#### Grape
+
+TODO. :sweat_smile:
+
+#### Generic
+
+```ruby
+require 'railsless/active_record'
+config = Railsless::ActiveRecord::Config.new
+
+# On app startup:
+Railsless::ActiveRecord.connect!(config)
+
+# On app shutdown:
+Railsless::ActiveRecord.disconnect!
+```
+
 
 ## Configuration
 
@@ -88,6 +116,8 @@ end
 ## Notes
 
 Apologies for the horrendous name. ActiveRecord has the gem name `activerecord`, but you need to `require 'active_record'` when using it. I decided to be up-front with you as to how to require the damn thing.
+
+Why not [sinatra-activerecord](https://github.com/janko-m/sinatra-activerecord)? It takes the (understandable) approach of *emulating* the ActiveRecord Rake tasks, instead of using them directly; this unfortunately which leaves large gaps in the set of tasks Rails users are used to. These ActiveRecord tasks have only really been able to be used directly since v4.0, though, so putting these changes back into Blake's/Janko's library would be very backwards-incompatible.
 
 ## License
 
