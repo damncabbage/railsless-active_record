@@ -1,4 +1,4 @@
-# Railsless-ActiveRecord
+# Railsless-ActiveRecord [![Build Status](https://travis-ci.org/damncabbage/railsless-active_record.png?branch=master)](https://travis-ci.org/damncabbage/railsless-active_record)
 
 Provides a ActiveRecord Rake tasks and integration for Sinatra, Grape and other not-Rails frameworks.
 
