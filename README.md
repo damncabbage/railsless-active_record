@@ -66,7 +66,7 @@ Railsless::ActiveRecord.disconnect!
 
 Run `rake db:generate:config` to generate a `config/database.yml` to fill in.
 
-If you don't, it will fall back to parsing `ENV['DATABASE_URL']`. If that isn't provided, this gem will explode.
+If you don't, it will fall back to parsing `ENV['DATABASE_URL']` (eg. `sqlite3:///db/development.sqlite3`). If that isn't provided, this gem will raise an error.
 
 
 ## Usage

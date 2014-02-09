@@ -24,7 +24,7 @@ module Railsless
       # is, borrowed from Rails.
       attr_writer :root
       def root
-         @root ||= Root.calculate
+        @root ||= Root.calculate
       end
 
       # Fumble around picking the right running environment.
@@ -33,8 +33,16 @@ module Railsless
       end
 
       attr_accessor_with_default(:db_config) do
-        YAML.load(read_config(db_config_path)).with_indifferent_access
+        case
+        when File.exist?(db_config_path)
+          YAML.load(read_config(db_config_path))
+        when ENV.has_key?('DATABASE_URL')
+          ENV.fetch('DATABASE_URL')
+        else
+          raise "Unable to locate database config; DATABASE_URL or config file at #{db_config_path} required."
+        end
       end
+
       attr_accessor_with_default(:db_config_path) do
         File.join(root, 'config', 'database.yml')
       end

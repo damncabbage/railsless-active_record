@@ -9,9 +9,14 @@ module Railsless
     module_function
 
     def connect!(config)
+      db_config = config.db_config
+      if db_config.is_a?(String)
+        ::ActiveRecord::Base.establish_connection(db_config)
+      else
+        ::ActiveRecord::Base.configurations = db_config
+        ::ActiveRecord::Base.establish_connection(config.env)
+      end
       ::ActiveRecord::Base.logger = config.logger
-      ::ActiveRecord::Base.configurations = config.db_config
-      ::ActiveRecord::Base.establish_connection(config.env)
       ::ActiveRecord::Base
     end
 
