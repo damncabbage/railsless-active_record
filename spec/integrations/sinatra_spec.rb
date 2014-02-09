@@ -70,7 +70,7 @@ shared_examples "a Sinatra app" do
       run "bundle exec rake db:drop db:create db:migrate"
       run_while "bundle exec rackup -p #{port}" do |stdout_and_err|
         # Wait for Sinatra to show up; explode if it doesn't.
-        wait_for_port! host, port, 3 # seconds
+        wait_for_port! host, port, 15 # seconds
 
         uri = URI("http://#{host}:#{port}/messages")
         expect(JSON.parse(Net::HTTP.get(uri))).to eq []
