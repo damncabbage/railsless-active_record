@@ -103,7 +103,9 @@ shared_examples "a Sinatra app" do
         begin
           yield(stdout_and_err) if block_given?
         ensure
-          Process.kill('TERM', pid)
+          # Have tried TERM, but Ruby 1.9.3 + Webrick flat-out ignores it.
+          # Break out kill -9.
+          Process.kill(:KILL, pid)
         end
       end
     end
