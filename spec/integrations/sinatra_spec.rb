@@ -5,7 +5,12 @@ require 'json'
 
 # The following tests spin up a Sinatra app in a separate process; keeping it
 # isolated means we can test the entire DB and app lifecycle without risk of pollution.
-describe "Sinatra integration" do
+
+# This shared example is used by both the spec/apps/sinatra-modular and the
+# spec/apps/sinatra-classic dummy apps. The meat of the specs are in the example;
+# see the bottom of file for app definitions. (We need to define the shared example
+# before we can use it.)
+shared_examples "a Sinatra app" do
   before(:all) { run "bundle install" }
 
   it "prints the expected list of ActiveRecord Rake tasks" do
@@ -86,8 +91,20 @@ describe "Sinatra integration" do
       end
     end
   end
+end
 
+# Example require('sinatra/base'), class-based Sinatra app.
+describe "Sinatra 'Modular' Integration" do
   def app_path
-    File.expand_path('../apps/sinatra', File.dirname(__FILE__))
+    File.expand_path('../apps/sinatra-modular', File.dirname(__FILE__))
   end
+  it_behaves_like "a Sinatra app"
+end
+
+# Example require('sinatra'), base-DSL-using Sinatra app.
+describe "Sinatra 'Classic' Integration" do
+  def app_path
+    File.expand_path('../apps/sinatra-classic', File.dirname(__FILE__))
+  end
+  it_behaves_like "a Sinatra app"
 end

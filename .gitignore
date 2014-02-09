@@ -17,4 +17,4 @@ test/version_tmp
 tmp
 
 # Dummy app ignores
-/spec/apps/sinatra/db/development.sqlite3
+/spec/apps/sinatra-*/db/development.sqlite3

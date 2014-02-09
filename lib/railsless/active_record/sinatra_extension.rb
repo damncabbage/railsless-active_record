@@ -31,3 +31,10 @@ module Railsless
     end
   end
 end
+
+# HACK: Support classic apps by automatically registering the extension, as recommended
+#       by the Sinatra docs here: http://www.sinatrarb.com/extensions.html
+if defined?(Sinatra) && defined?(Sinatra::Application)
+  # We're using classic; sinatra/main defines Sinatra::Application, so hook into that.
+  Sinatra::Application.send(:register, ::Railsless::ActiveRecord::SinatraExtension)
+end

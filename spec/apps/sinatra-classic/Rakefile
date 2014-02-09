@@ -1,0 +1,2 @@
+require 'railsless/active_record/load_tasks'
+require './app' # We don't need no stinkin' :environment block
