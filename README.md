@@ -8,16 +8,20 @@ Add `gem 'railsless-active_record'` to your Gemfile (along with `gem 'sqlite3'`,
 
 ### Rake
 
-In your Rakefile, add the following line:
+In your Rakefile, add the following lines:
 
 ```ruby
 require 'railsless/active_record/load_tasks'
-require './app' # or whatever the path to your app or server is.
+task :environment do
+  require './app' # or whatever the path to your app or server is.
+end
 ```
+
+(You **will** need to put the app `require` inside the `:environment` block, or face having tasks like `db:generate:config` fail because of the app trying to establish a database connection immediately when required.)
 
 You'll then need to integrate this gem with your app; here's how to do it with some common non-Rails frameworks:
 
-#### Sinatra
+### Sinatra
 
 In your application, add a `register Railsless::ActiveRecord::SinatraExtension` line to use the extension to manage your database configuration and connections, eg.
 
@@ -40,11 +44,11 @@ require 'railsless/active_record/sinatra_extension'
 # get '/foo', ... etc.
 ```
 
-#### Grape
+### Grape
 
 TODO. :sweat_smile:
 
-#### Generic
+### Generic
 
 ```ruby
 require 'railsless/active_record'
