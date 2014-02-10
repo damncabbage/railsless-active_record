@@ -54,8 +54,36 @@ shared_examples "a Sinatra app" do
       end
     end
 
-    pending "'db:generate:migration NAME=NameHere' creates a migration" do
-      # TODO: 'NameHere' -> 'name_here' transform.
+    describe "db:generate:migration NAME=NameHere" do
+      let(:migrations_path) { File.join(app_path, 'db', 'migrate') }
+
+      it "explodes when no name given" do
+        out = run 'bundle exec rake db:generate:migration', should_succeed=false
+        expect(out).to match /Usage:/
+      end
+
+      it "normalises NAME=CamelCase" do
+        out = run 'bundle exec rake db:generate:migration NAME=CreateExamples'
+        expect_migration(out, 'CreateExamples', 'create_examples')
+      end
+
+      it "normalises NAME=snake_case" do
+        out = run 'bundle exec rake db:generate:migration NAME=drop_examples'
+        expect_migration(out, 'DropExamples', 'drop_examples')
+      end
+
+      def expect_migration(out, class_name, filename_suffix)
+        expect(out).to match /\ACreated migration: (.*)\Z/ do |m|
+          filename = m[1]
+          expect(filename).to match /\/[0-9]+_#{filename_suffix}.rb\Z/
+          expect(File.read(filename)).to match /\Aclass #{class_name} < ActiveRecord::Migration/
+        end
+      end
+
+      # Clean up examples after each run.
+      after do
+        Dir["#{migrations_path}/*_examples.rb"].each {|f| FileUtils.rm_f(f) }
+      end
     end
   end
 
@@ -87,11 +115,11 @@ shared_examples "a Sinatra app" do
 
   # Helpers
 
-  def run(command)
+  def run(command, should_succeed=true)
     output = ""
     Bundler.with_clean_env do
-      output, status = Open3.capture2(command, :chdir => app_path)
-      expect(status).to be_success
+      output, status = Open3.capture2e(command, :chdir => app_path)
+      expect(status.success?).to eq should_succeed
     end
     output
   end

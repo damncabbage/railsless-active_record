@@ -1,6 +1,8 @@
+require 'active_support/inflector' # Doesn't mix in; called for its class methods.
 require 'active_record'
-require 'rake'
 require 'fileutils'
+require 'rake'
+require 'erb'
 
 module Railsless
   module ActiveRecord
@@ -61,8 +63,22 @@ module Railsless
 
             desc "Generate a database migration, eg: rake db:generate:migration NAME=CreatePosts"
             task :migration do
-              # TODO: NAME=...
-              raise "Not Implemented"
+              migrations_path = config.migrations_path
+              timestamp = Time.now.strftime("%Y%m%d%H%M%S")
+              name = ENV.fetch('NAME') do
+                fail "Usage: rake db:generate:migration NAME=CreatePosts"
+              end
+
+              # Normalise the name to a MigrationClass and a migration_filename
+              migration_class    = ActiveSupport::Inflector.camelize(name)
+              migration_filename = "#{timestamp}_#{ActiveSupport::Inflector.underscore(name)}.rb"
+              migration_path     = File.join(migrations_path, migration_filename)
+
+              template = File.read(File.join(TEMPLATES_PATH, 'migration.erb'))
+              FileUtils.mkdir_p(migrations_path)
+              File.write(migration_path, ERB.new(template).result(binding))
+
+              puts "Created migration: #{migration_path}"
             end
           end
         end
