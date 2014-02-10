@@ -6,7 +6,7 @@ require 'erb'
 module Railsless
   module ActiveRecord
     class Config
-      def self.attr_accessor_with_default(name, &block)
+      def self.accessor_with_default(name, &block)
         module_eval do
           attr_writer name
           define_method(name) do
@@ -28,11 +28,11 @@ module Railsless
       end
 
       # Fumble around picking the right running environment.
-      attr_accessor_with_default(:env) do
+      accessor_with_default(:env) do
         ENV['RACK_ENV'] || ENV['SINATRA_ENV'] || ENV['RAILS_ENV'] || ENV['ENV'] || 'development'
       end
 
-      attr_accessor_with_default(:db_config) do
+      accessor_with_default(:db_config) do
         case
         when File.exist?(db_config_path)
           YAML.load(read_config(db_config_path))
@@ -43,15 +43,15 @@ module Railsless
         end
       end
 
-      attr_accessor_with_default(:db_config_path) do
-        File.join(root, 'config', 'database.yml')
-      end
-      attr_accessor_with_default(:db_path)     { File.join(root, 'db') }
-      attr_accessor_with_default(:seeds_path)  { File.join(db_path, 'seeds.rb') }
-      attr_accessor_with_default(:schema_path) { File.join(db_path, 'schema.rb') }
-      attr_accessor_with_default(:migrations_path) { File.join(db_path, 'migrate') }
+      accessor_with_default(:config_path)     { File.join(root, 'config') }
+      accessor_with_default(:db_config_path)  { File.join(config_path, 'database.yml') }
 
-      attr_accessor_with_default(:logger) { Logger.new(STDOUT) }
+      accessor_with_default(:db_path)         { File.join(root, 'db') }
+      accessor_with_default(:seeds_path)      { File.join(db_path, 'seeds.rb') }
+      accessor_with_default(:schema_path)     { File.join(db_path, 'schema.rb') }
+      accessor_with_default(:migrations_path) { File.join(db_path, 'migrate') }
+
+      accessor_with_default(:logger) { Logger.new(STDOUT) }
 
       protected
 

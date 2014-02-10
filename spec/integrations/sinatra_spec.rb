@@ -42,7 +42,7 @@ shared_examples "a Sinatra app" do
       end
 
       it "generates a config file that doesn't yet exist" do
-        FileUtils.rm_f(config_path)
+        FileUtils.rm_f(config_path) # TODO: Avoid directly modifying a fixture app like this.
         out = run "bundle exec rake db:generate:config"
         expect(File.read(config_path)).to eq File.read(template_path)
       end

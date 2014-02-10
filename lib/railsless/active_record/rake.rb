@@ -50,14 +50,12 @@ module Railsless
 
             desc "Generate and write a config/database.yml"
             task :config do
-              config_path = config.db_config_path
-              if File.exists?(config_path)
-                puts "Database config already exists at #{config_path}; skipping..."
+              db_config_path = config.db_config_path
+              if File.exists?(db_config_path)
+                puts "Database config already exists at #{db_config_path}; skipping..."
               else
-                FileUtils.cp(
-                  File.join(TEMPLATES_PATH, 'database.yml'),
-                  config_path
-                )
+                FileUtils.mkdir_p(config.config_path)
+                FileUtils.cp(File.join(TEMPLATES_PATH, 'database.yml'), db_config_path)
               end
             end
 
