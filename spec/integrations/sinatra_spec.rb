@@ -26,6 +26,9 @@ shared_examples "a Sinatra app" do
     end
   end
 
+  # TODO: This block is both testing integration AND the Rake tasks themselves.
+  #       Break this out so we have independent Rake integration tests and a
+  #       very set of tests, just to make sure it hooks up fine with Sinatra.
   context "generators" do
     describe "db:generate:config" do
       let(:config_path) do
